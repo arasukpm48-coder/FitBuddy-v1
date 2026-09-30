@@ -1,0 +1,106 @@
+{% macro render_plan(plan_text) %}
+<div class="days-grid">
+  {% for day in plan_text | plan_days %}
+  <article class="day-card">
+    <h3>{{ day.title }}</h3>
+    {% for line in day.lines %}
+      {% if line.bullet %}
+        <p class="line bullet">{{ line.text }}</p>
+      {% elif line.label %}
+        <p class="line"><strong>{{ line.label }}:</strong> {{ line.text }}</p>
+      {% else %}
+        <p class="line">{{ line.text }}</p>
+      {% endif %}
+    {% endfor %}
+  </article>
+  {% endfor %}
+</div>
+{% endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Workout Plan – FitBuddy</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="/">💪 FitBuddy</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/view-all-users">All Users</a>
+      <a href="/docs">API Docs</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+    <section class="card">
+      <h2>Your Information</h2>
+      <div class="info-grid">
+        <div><span>Name</span><strong>{{ user.name }}</strong></div>
+        <div><span>User ID</span><strong>{{ user.user_id }}</strong></div>
+        <div><span>Age</span><strong>{{ user.age }}</strong></div>
+        <div><span>Weight</span><strong>{{ user.weight }} kg</strong></div>
+        <div><span>Goal</span><strong>{{ user.goal }}</strong></div>
+        <div><span>Intensity</span><strong>{{ user.intensity }}</strong></div>
+      </div>
+    </section>
+
+    {% if user.updated_plan %}
+    <section class="card highlight">
+      <h2>✅ Your Updated Workout Plan</h2>
+      <p class="hint">This plan was updated using your feedback.</p>
+      {{ render_plan(user.updated_plan) }}
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Show my original 7-day workout plan</summary>
+        {{ render_plan(user.original_plan) }}
+      </details>
+    </section>
+    {% else %}
+    <section class="card">
+      <h2>Your 7-Day Workout Plan</h2>
+      {{ render_plan(user.original_plan) }}
+    </section>
+    {% endif %}
+
+    <section class="card tip-card">
+      <h2>Nutrition / Recovery Tip</h2>
+      <p>{{ user.nutrition_tip }}</p>
+    </section>
+
+    <section class="card">
+      <h2>Give Feedback</h2>
+      <p class="hint">Examples: "Add more cardio", "Make the workout easier", "Add yoga",
+        "Include more rest days", "Reduce leg exercises".</p>
+      <form action="/submit-feedback" method="post">
+        <div class="form-group">
+          <label for="fb_user_id">User ID</label>
+          <input type="text" id="fb_user_id" name="user_id" value="{{ user.user_id }}" required>
+        </div>
+        <div class="form-group">
+          <label for="feedback">Feedback</label>
+          <textarea id="feedback" name="feedback" rows="3" maxlength="500"
+                    placeholder="What would you like to change?" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update My Workout</button>
+        <p class="hint">Updating can take 10–30 seconds. Please wait after clicking.</p>
+      </form>
+    </section>
+
+    <div class="actions">
+      <a class="btn btn-secondary" href="/">⬅ Back to Home</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p class="disclaimer">⚠️ {{ disclaimer }}</p>
+  </footer>
+</body>
+</html>

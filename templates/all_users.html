@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Users – FitBuddy Admin</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="/">💪 FitBuddy</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/view-all-users">All Users</a>
+      <a href="/docs">API Docs</a>
+    </nav>
+  </header>
+
+  <main class="container wide">
+    <h1 class="page-title">Admin – All Users</h1>
+
+    {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+    {% elif not users %}
+      <div class="alert alert-info">No users yet. Go to the <a href="/">home page</a> and generate a workout first.</div>
+    {% else %}
+      <p class="hint">Total users: {{ users | length }}</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Weight</th>
+              <th>Goal</th>
+              <th>Intensity</th>
+              <th>Nutrition Tip</th>
+              <th>Original Plan</th>
+              <th>Updated Plan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td data-label="User ID">{{ user.user_id }}</td>
+              <td data-label="Name">{{ user.name }}</td>
+              <td data-label="Age">{{ user.age }}</td>
+              <td data-label="Weight">{{ user.weight }} kg</td>
+              <td data-label="Goal">{{ user.goal }}</td>
+              <td data-label="Intensity">{{ user.intensity }}</td>
+              <td data-label="Nutrition Tip">{{ user.nutrition_tip or "—" }}</td>
+              <td data-label="Original Plan">
+                <details>
+                  <summary>View plan</summary>
+                  <div class="plan-text">{{ user.original_plan }}</div>
+                </details>
+              </td>
+              <td data-label="Updated Plan">
+                {% if user.updated_plan %}
+                <details>
+                  <summary>View plan</summary>
+                  <div class="plan-text">{{ user.updated_plan }}</div>
+                </details>
+                {% else %}
+                  <span class="muted">Not updated</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    <div class="actions">
+      <a class="btn btn-secondary" href="/">⬅ Back to Home</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p class="disclaimer">⚠️ {{ disclaimer }}</p>
+  </footer>
+</body>
+</html>
